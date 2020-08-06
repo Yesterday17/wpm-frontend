@@ -1,0 +1,16 @@
+{
+  "devDependencies": {
+    "copy-webpack-plugin": "^6.0.3",
+    "pixi.js": "^5.3.3",
+    "ts-loader": "^8.0.2",
+    "typescript": "^3.9.7",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
+  },
+  "scripts": {
+    "tsc": "tsc",
+    "build": "webpack --mode=production",
+    "dev": "webpack --mode=development && webpack-dev-server"
+  }
+}
