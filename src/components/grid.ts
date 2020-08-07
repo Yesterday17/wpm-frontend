@@ -1,6 +1,7 @@
-import { Graphics, resources } from "../pixi";
-import { Theme } from "../theme";
+import { config } from "../config";
 import { Waypoint } from "../models/waypoint";
+import { Graphics } from "../pixi";
+import { Theme } from "../theme";
 import { WaypointGrid } from "./waypointGrid";
 
 export class Grid extends Graphics {
@@ -68,7 +69,17 @@ export class Grid extends Graphics {
 
   drawLine(startX: number, startY: number, finX: number, finY: number) {
     this.moveTo(startX, startY);
-    this.lineTo(finX, finY);
+    switch (config.gridLineStyle) {
+      case "line":
+        this.lineTo(finX, finY);
+        break;
+      case "dash":
+        this.dashLineTo(finX, finY);
+        break;
+      case "none":
+      default:
+        break;
+    }
   }
 
   bindWaypoints(wps: Waypoint[]) {
@@ -105,5 +116,49 @@ export class Grid extends Graphics {
 
     this.x = (this.x + moveX) % this.gridWidth;
     this.y = (this.y + moveY) % this.gridWidth;
+  }
+
+  // https://github.com/pixijs/pixi.js/issues/1333#issuecomment-424324927
+  dashLineTo(toX: number, toY: number, dash = 16, gap = 8) {
+    const lastPosition = this.currentPath.points;
+
+    const currentPosition = {
+      x: lastPosition[lastPosition.length - 2] || 0,
+      y: lastPosition[lastPosition.length - 1] || 0,
+    };
+
+    const absValues = {
+      toX: Math.abs(toX),
+      toY: Math.abs(toY),
+    };
+
+    for (
+      ;
+      Math.abs(currentPosition.x) < absValues.toX ||
+      Math.abs(currentPosition.y) < absValues.toY;
+
+    ) {
+      currentPosition.x =
+        Math.abs(currentPosition.x + dash) < absValues.toX
+          ? currentPosition.x + dash
+          : toX;
+      currentPosition.y =
+        Math.abs(currentPosition.y + dash) < absValues.toY
+          ? currentPosition.y + dash
+          : toY;
+
+      this.lineTo(currentPosition.x, currentPosition.y);
+
+      currentPosition.x =
+        Math.abs(currentPosition.x + gap) < absValues.toX
+          ? currentPosition.x + gap
+          : toX;
+      currentPosition.y =
+        Math.abs(currentPosition.y + gap) < absValues.toY
+          ? currentPosition.y + gap
+          : toY;
+
+      this.moveTo(currentPosition.x, currentPosition.y);
+    }
   }
 }

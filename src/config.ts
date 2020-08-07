@@ -6,6 +6,8 @@ export class config {
   static dim: string = "0";
   static showCursorInfo: number = 1;
 
+  static gridLineStyle: "line" | "dash" | "none" = "dash";
+
   static auth: string = "";
   static nowChunksX: number = 0;
   static nowChunksZ: number = 0;
