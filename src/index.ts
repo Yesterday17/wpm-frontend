@@ -1,8 +1,15 @@
 import { fetchDimension, fetchDimensions } from "./api/api";
 import { Grid } from "./components/grid";
 import { InfoPanel } from "./components/info";
+import { SearchBox } from "./components/search";
 import { config } from "./config";
-import { Application, InteractionEvent, Point, Rectangle, utils } from "./pixi";
+import {
+  Application,
+  InteractionEvent,
+  Point,
+  Rectangle,
+  utils,
+} from "./pixi/pixi";
 import { states } from "./states";
 import { Theme } from "./theme";
 import { Persist } from "./utils/persist";
@@ -10,16 +17,18 @@ import { Persist } from "./utils/persist";
 utils.sayHello("rua!");
 
 Theme.darkMode = Persist.getBoolean("dark_mode"); // dark mode = not transparent
-const baseUrl = process.env.BASE_URL;
+const baseUrl = "https://waypoint.mmf.moe";
 
 // App
 const app = new Application({
-  width: window.innerWidth,
-  height: window.innerHeight,
   antialias: true,
   resolution: 1,
   transparent: !Theme.darkMode,
 });
+app.renderer.view.style.position = "absolute";
+app.renderer.view.style.display = "block";
+app.renderer.autoDensity = true;
+app.renderer.resize(window.innerWidth, window.innerHeight);
 
 // Interactive stage
 app.stage.interactive = true;
@@ -50,6 +59,20 @@ window.addEventListener("resize", () => {
   grid.rerender();
 });
 
+app.view.addEventListener("wheel", (event) => {
+  let diff = 0.2 * (event.deltaY > 0 ? -1 : 1);
+  let original = grid.zoomFactor;
+  let scale = Math.sqrt(grid.zoomFactor ** 2 * (1 + diff));
+  diff = scale - original;
+  if ((diff < 0 && scale < 1) || (diff > 0 && scale > 5)) {
+    // do not scale
+    return;
+  }
+
+  grid.zoomAt(scale, event.x, event.y);
+  grid.rerender();
+});
+
 async function main() {
   const dims = await fetchDimensions(baseUrl);
 
@@ -77,6 +100,25 @@ async function main() {
       grid.handleDrag(offsetX, offsetY);
       grid.removeChildren();
       grid.renderWaypoints();
+    }
+  });
+
+  window.addEventListener("keydown", (event) => {
+    if (event.ctrlKey && event.keyCode === 70 && !states.search) {
+      // Ctrl+F
+      event.preventDefault();
+      app.stage.addChild(SearchBox);
+      SearchBox.focus();
+      states.search = true;
+    } else if (event.keyCode === 27 && states.search) {
+      // ESC
+      event.preventDefault();
+      app.stage.removeChild(SearchBox);
+      states.search = false;
+    } else if (event.keyCode === 13 && states.search) {
+      // Enter
+      event.preventDefault();
+      // Show search result
     }
   });
 }

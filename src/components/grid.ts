@@ -1,6 +1,6 @@
 import { config } from "../config";
 import { Waypoint } from "../models/waypoint";
-import { Graphics } from "../pixi";
+import { Graphics } from "../pixi/pixi";
 import { Theme } from "../theme";
 import { WaypointGrid } from "./waypointGrid";
 
@@ -34,6 +34,13 @@ export class Grid extends Graphics {
   zoom(scale: number) {
     this.zoomFactor = scale;
     this.gridWidth = this.zoomFactor * this.baseWidth;
+    this.resize(this.width, this.height);
+  }
+
+  zoomAt(scale: number, x: number, y: number) {
+    const rate = scale / this.zoomFactor - 1;
+    this.zoom(scale);
+    this.handleDrag(-rate * x, -rate * y);
   }
 
   rerender() {

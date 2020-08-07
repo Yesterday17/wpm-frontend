@@ -1,4 +1,4 @@
-import { Graphics, Rectangle, Text } from "../pixi";
+import { Graphics, Rectangle, Text } from "../pixi/pixi";
 import { Waypoint } from "../models/waypoint";
 
 class Info extends Graphics {

@@ -17,6 +17,7 @@
     "@pixi/app": "^5.3.3",
     "@pixi/constants": "^5.3.3",
     "@pixi/core": "^5.3.3",
+    "@pixi/display": "^5.3.3",
     "@pixi/graphics": "^5.3.3",
     "@pixi/interaction": "^5.3.3",
     "@pixi/math": "^5.3.3",

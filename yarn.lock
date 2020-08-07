@@ -55,7 +55,7 @@
     "@pixi/ticker" "5.3.3"
     "@pixi/utils" "5.3.3"
 
-"@pixi/display@5.3.3":
+"@pixi/display@5.3.3", "@pixi/display@^5.3.3":
   version "5.3.3"
   resolved "https://registry.yarnpkg.com/@pixi/display/-/display-5.3.3.tgz#14646b35b80b8586316be3495e3c0e7fa610f499"
   integrity sha512-dPm7Vk2BH9byu6RHBYsI9MtjUU8x1HNm/PIi6lIlxANhTjWnhxwfvmrGE7ZcRLThTenNdDVlZ2ke2XAXP98UgA==

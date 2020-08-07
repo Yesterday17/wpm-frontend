@@ -1,4 +1,4 @@
-import { Graphics, Text } from "../pixi";
+import { Graphics, Text } from "../pixi/pixi";
 import { Theme } from "../theme";
 import { color2rgba } from "../utils/color";
 import { Waypoint } from "../models/waypoint";
