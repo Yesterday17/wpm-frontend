@@ -1,7 +1,7 @@
 {
   "devDependencies": {
     "copy-webpack-plugin": "^6.0.3",
-    "pixi.js": "^5.3.3",
+    "terser-webpack-plugin": "^4.0.0",
     "ts-loader": "^8.0.2",
     "typescript": "^3.9.7",
     "webpack": "^4.44.1",
@@ -12,5 +12,18 @@
     "tsc": "tsc",
     "build": "webpack --mode=production",
     "dev": "webpack --mode=development && webpack-dev-server"
+  },
+  "dependencies": {
+    "@pixi/app": "^5.3.3",
+    "@pixi/constants": "^5.3.3",
+    "@pixi/core": "^5.3.3",
+    "@pixi/graphics": "^5.3.3",
+    "@pixi/interaction": "^5.3.3",
+    "@pixi/math": "^5.3.3",
+    "@pixi/runner": "^5.3.3",
+    "@pixi/settings": "^5.3.3",
+    "@pixi/text": "^5.3.3",
+    "@pixi/ticker": "^5.3.3",
+    "@pixi/utils": "^5.3.3"
   }
 }
