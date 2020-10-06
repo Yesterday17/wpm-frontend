@@ -16,6 +16,7 @@ export class Grid extends Graphics {
   baseChunkY: number = 0;
 
   waypoints: Map<string, Waypoint> = new Map();
+  rendered: Map<string, WaypointGrid> = new Map();
 
   constructor(x: number, y: number, width: number, scale: number = 1) {
     super();
@@ -99,22 +100,31 @@ export class Grid extends Graphics {
       const currentX = this.baseChunkX + i;
       for (let j = -1; j < this.maxY + 1; j++) {
         const currentY = this.baseChunkY + j;
-        if (this.waypoints.has(`${currentX}/${currentY}`)) {
-          this.drawWaypoint(
-            i,
-            j,
-            this.waypoints.get(`${currentX}/${currentY}`)
-          );
+        const identifier = `${currentX}/${currentY}`;
+        if (this.waypoints.has(identifier)) {
+          this.drawWaypoint(i, j, this.waypoints.get(identifier));
         }
       }
     }
   }
 
   drawWaypoint(x: number, y: number, wp: Waypoint) {
-    const waypoint = new WaypointGrid(wp, this.baseWidth, this.zoomFactor);
+    let waypoint: WaypointGrid;
+    // Reuse / create WaypointGrid
+    if (this.rendered.has(wp.identifier)) {
+      waypoint = this.rendered.get(wp.identifier);
+      waypoint.zoom(this.zoomFactor);
+    } else {
+      waypoint = new WaypointGrid(wp, this.baseWidth, this.zoomFactor);
+    }
+
+    // Update offset
     waypoint.x = x * this.gridWidth;
     waypoint.y = y * this.gridWidth;
+
+    // Add to grid & save
     this.addChild(waypoint);
+    this.rendered.set(wp.identifier, waypoint);
   }
 
   handleDrag(moveX: number, moveY: number) {
