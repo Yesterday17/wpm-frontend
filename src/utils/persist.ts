@@ -8,9 +8,9 @@ export class Persist {
   }
 
   static getBoolean(name: string, initial: boolean = false): boolean {
+    const str = localStorage.getItem(name);
     return (
-      (localStorage.getItem(name) && Boolean(localStorage.getItem(name))) ||
-      initial
+      (str && (Number(str) === 1 || str.toLowerCase() === "true")) || initial
     );
   }
 
@@ -19,7 +19,8 @@ export class Persist {
   }
 
   static getNumber(name: string, initial: number = 0): number {
-    const result = Number(this.getString(name));
+    const str = this.getString(name);
+    const result = str === "" ? NaN : Number(str);
     if (!isNaN(result)) {
       return result;
     } else {
@@ -28,6 +29,6 @@ export class Persist {
   }
 
   static setNumber(name: string, value: number) {
-    this.setString(name, String(value));
+    this.setString(name, String(Math.floor(value * 100) / 100));
   }
 }

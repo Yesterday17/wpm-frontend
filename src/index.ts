@@ -35,7 +35,12 @@ app.stage.interactive = true;
 app.stage.hitArea = new Rectangle(0, 0, window.innerWidth, window.innerHeight);
 
 // Grid
-const grid = new Grid(window.innerWidth, window.innerHeight, 48, 2);
+const grid = new Grid(
+  window.innerWidth,
+  window.innerHeight,
+  48,
+  Persist.getNumber("zoom", 2)
+);
 app.stage.addChild(grid);
 
 // Info
@@ -76,12 +81,13 @@ app.view.addEventListener("wheel", (event) => {
 async function main() {
   const dims = await fetchDimensions(baseUrl);
 
-  if (dims.includes(config.dim)) {
+  if (!dims.includes(config.dim)) {
     config.dim = "0";
   }
 
   const points = await fetchDimension(config.dim, baseUrl);
-  grid.bindWaypoints(points);
+
+  grid.load(config.dim, points);
 
   // Drag
   let dragPoint: Point;
@@ -89,7 +95,10 @@ async function main() {
     states.dragging = true;
     dragPoint = event.data.global.clone();
   });
-  app.stage.addListener("pointerup", () => (states.dragging = false));
+  app.stage.addListener("pointerup", () => {
+    states.dragging = false;
+    grid.persist();
+  });
   app.stage.addListener("pointerupoutside", () => (states.dragging = false));
   app.stage.addListener("pointermove", (event: InteractionEvent) => {
     if (states.dragging) {

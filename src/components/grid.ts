@@ -2,6 +2,7 @@ import { config } from "../config";
 import { Waypoint } from "../models/waypoint";
 import { Graphics } from "../pixi/pixi";
 import { Theme } from "../theme";
+import { Persist } from "../utils/persist";
 import { WaypointGrid } from "./waypointGrid";
 
 export class Grid extends Graphics {
@@ -15,6 +16,7 @@ export class Grid extends Graphics {
   baseChunkX: number = 0;
   baseChunkY: number = 0;
 
+  dim: string;
   waypoints: Map<string, Waypoint> = new Map();
   rendered: Map<string, WaypointGrid> = new Map();
 
@@ -24,7 +26,6 @@ export class Grid extends Graphics {
     this.baseWidth = width;
     this.zoom(scale);
     this.resize(x, y);
-    this.rerender();
   }
 
   resize(x: number, y: number) {
@@ -34,6 +35,8 @@ export class Grid extends Graphics {
 
   zoom(scale: number) {
     this.zoomFactor = scale;
+    Persist.setNumber("zoom", this.zoomFactor);
+
     this.gridWidth = this.zoomFactor * this.baseWidth;
     this.resize(this.width, this.height);
   }
@@ -90,7 +93,27 @@ export class Grid extends Graphics {
     }
   }
 
+  load(dim: string, wps: Waypoint[]) {
+    this.dim = dim;
+    this.baseChunkX = Persist.getNumber(`grid-${dim}-baseChunkX`, 0);
+    this.baseChunkY = Persist.getNumber(`grid-${dim}-baseChunkY`, 0);
+
+    this.x = Persist.getNumber(`grid-${dim}-x`, 0);
+    this.y = Persist.getNumber(`grid-${dim}-y`, 0);
+    this.bindWaypoints(wps);
+
+    this.rerender();
+  }
+
+  persist() {
+    Persist.setNumber(`grid-${this.dim}-baseChunkX`, this.baseChunkX);
+    Persist.setNumber(`grid-${this.dim}-baseChunkY`, this.baseChunkY);
+    Persist.setNumber(`grid-${this.dim}-x`, this.x);
+    Persist.setNumber(`grid-${this.dim}-y`, this.y);
+  }
+
   bindWaypoints(wps: Waypoint[]) {
+    this.waypoints.clear();
     wps.forEach((p) => this.waypoints.set(p.identifier, p));
     this.renderWaypoints();
   }
